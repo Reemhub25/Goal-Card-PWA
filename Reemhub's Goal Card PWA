@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Goal Card – ReemHub Edition</title>
+  <meta name="theme-color" content="#046307" />
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <style>
+    :root{
+      --green:#046307; --gold:#d4af37; --bg:#0f1412; --card:#121a16; --muted:#9fb3a8;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:#e8f5ee;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+    .wrap{max-width:860px;margin:0 auto;padding:20px}
+    header{display:flex;align-items:center;gap:12px;padding:16px 0}
+    .logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--green),#0a3c15);display:grid;place-items:center;box-shadow:0 8px 28px rgba(4,99,7,.45)}
+    .logo span{font-weight:900;color:var(--gold)}
+    h1{margin:0;font-size:1.6rem;line-height:1.2}
+    .sub{color:var(--muted);font-size:.95rem}
+    .card{background:var(--card);border:1px solid rgba(212,175,55,.18);border-radius:18px;padding:16px;margin:14px 0;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    label{font-size:.9rem;color:#cfe3d8}
+    input, textarea, select{width:100%;padding:12px;border-radius:12px;border:1px solid #223127;background:#0e1512;color:#e8f5ee}
+    textarea{min-height:88px;resize:vertical}
+    button{border:0;border-radius:14px;padding:12px 14px;font-weight:700;cursor:pointer}
+    .btn-primary{background:linear-gradient(135deg,var(--green),#0a3c15);color:#fff;box-shadow:0 10px 24px rgba(4,99,7,.35)}
+    .btn-ghost{background:transparent;border:1px solid #24452f;color:#c8e6d7}
+    .btn-gold{background:linear-gradient(135deg,var(--gold),#a07f22);color:#121212}
+    .flex{display:flex;gap:10px;flex-wrap:wrap}
+    .goal{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:center;padding:12px;border-radius:14px;background:#0d1511;border:1px solid #203224}
+    .goal.done{opacity:.6;text-decoration:line-through}
+    .goal .title{font-weight:700}
+    .actions{display:flex;gap:8px}
+    .section-title{margin:24px 0 8px;font-weight:800;letter-spacing:.3px;color:#e9f9f1}
+    .muted{color:#a9c4b7;font-size:.92rem}
+    .footer{padding:30px 0;color:#86a294;text-align:center}
+    .video{aspect-ratio:16/9;width:100%;border:0;border-radius:16px;overflow:hidden}
+    details{background:#0d1511;border:1px solid #223127;border-radius:14px;padding:10px}
+    summary{cursor:pointer;font-weight:700;color:#e8f5ee;margin:6px 0}
+    #splash{position:fixed;inset:0;background:radial-gradient(1000px 600px at 20% 10%, #0a3c15 0%, #0f1412 60%, #0b0b0b 100%);display:grid;place-items:center;z-index:9999}
+  </style>
+</head>
+<body>
+  <!-- Splash -->
+  <div id="splash">
+    <div style="text-align:center">
+      <div style="width:96px;height:96px;margin:0 auto 14px;border-radius:24px;background:linear-gradient(135deg,var(--green),#0a3c15);display:grid;place-items:center;box-shadow:0 18px 50px rgba(4,99,7,.45);font-size:44px">👑</div>
+      <div style="font-weight:900;font-size:1.4rem;color:#e8f5ee">ReemHub Goal Card</div>
+      <div class="muted" style="margin-top:6px">Loading your goals…</div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <header>
+      <div class="logo"><span>👑</span></div>
+      <div>
+        <h1>Goal Card</h1>
+        <div class="sub">Set it. See it. Execute it. – “Mindset moves before money does.”</div>
+      </div>
+    </header>
+
+    <!-- Create a goal -->
+    <section class="card">
+      <div class="section-title">Create a goal</div>
+      <div class="row">
+        <div>
+          <label>Goal Title</label>
+          <input id="title" placeholder="e.g., 750 credit score" />
+        </div>
+        <div>
+          <label>Due Date</label>
+          <input id="due" type="date" />
+        </div>
+      </div>
+      <label>Why this matters</label>
+      <textarea id="why" placeholder="Tie it to purpose. Your ‘why’ fuels execution."></textarea>
+      <div class="row">
+        <div>
+          <label>Frequency</label>
+          <select id="freq">
+            <option value="once">One-time</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+        <div>
+          <label>Reminder Time</label>
+          <input id="time" type="time" />
+        </div>
+      </div>
+      <div class="flex" style="margin-top:10px">
+        <button class="btn-primary" id="addBtn">Add Goal</button>
+        <button class="btn-ghost" id="notifyBtn">Enable Notifications</button>
+      </div>
+      <div class="muted">Tip: Use “Add to Calendar” on each goal below for native reminders on iOS/Android.</div>
+    </section>
+
+    <!-- Goal list -->
+    <section class="card" id="listCard">
+      <div class="section-title">Your goals</div>
+      <div id="goalList"></div>
+    </section>
+
+    <!-- Napoleon Hill – video area -->
+    <section class="card">
+      <div class="section-title">The 13 Principles (overview)</div>
+      <p class="muted">Below are the principle names for quick reference. Load your licensed video below.</p>
+      <details>
+        <summary>Show the list</summary>
+        <ul>
+          <li>Desire</li><li>Faith</li><li>Autosuggestion</li><li>Specialized Knowledge</li><li>Imagination</li>
+          <li>Organized Planning</li><li>Decision</li><li>Persistence</li><li>Power of the Master Mind</li>
+          <li>The Mystery of Sex Transmutation</li><li>The Subconscious Mind</li><li>The Brain</li><li>The Sixth Sense</li>
+        </ul>
+      </details>
+
+      <div style="margin-top:12px">
+        <label>Video URL (YouTube / Vimeo)</label>
+        <input id="videoUrl" placeholder="https://..." />
+        <div style="margin-top:8px" class="flex">
+          <button class="btn-gold" id="loadVideo">Load Video</button>
+          <button class="btn-ghost" id="clearVideo">Clear</button>
+        </div>
+        <div style="margin-top:12px">
+          <iframe id="player" class="video" allowfullscreen referrerpolicy="no-referrer"></iframe>
+        </div>
+        <div class="muted">Use an official source to avoid copyright issues.</div>
+      </div>
+    </section>
+
+    <div class="footer">© <span id="year"></span> ReemHub • Credit is a cheat code • Pressure makes prints</div>
+  </div>
+
+  <script>
+    // Register PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
+    }
+
+    const $ = s => document.querySelector(s);
+    const lsKey = 'reem_goalcard_v1';
+    const state = { goals: JSON.parse(localStorage.getItem(lsKey) || '[]') };
+
+    function save(){ localStorage.setItem(lsKey, JSON.stringify(state.goals)); render(); }
+
+    function render(){
+      const list = $('#goalList');
+      if(!state.goals.length){ list.innerHTML = '<p class="muted">No goals yet. Add your first one above.</p>'; return; }
+      list.innerHTML = '';
+      state.goals.forEach((g, idx) => {
+        const row = document.createElement('div');
+        row.className = 'goal' + (g.done ? ' done':'');
+        row.innerHTML = `
+          <input type="checkbox" ${g.done? 'checked':''} data-idx="${idx}" class="chk">
+          <div>
+            <div class="title">${g.title || 'Untitled goal'}</div>
+            <div class="muted">Due: ${g.due || '—'} • ${g.freq} • ${g.time || '—'}</div>
+            <div class="muted">Why: ${g.why || '—'}</div>
+          </div>
+          <div class="actions">
+            <button class="btn-ghost ics" data-idx="${idx}">Add to Calendar</button>
+            <button class="btn-ghost del" data-idx="${idx}">Delete</button>
+          </div>`;
+        list.appendChild(row);
+      });
+    }
+
+    function addGoal(){
+      const title = $('#title').value.trim();
+      const due = $('#due').value;
+      const why = $('#why').value.trim();
+      const freq = $('#freq').value;
+      const time = $('#time').value;
+      state.goals.push({title, due, why, freq, time, done:false, created: Date.now()});
+      ['#title','#due','#why','#time'].forEach(s => $(s).value='');
+      save();
+    }
+
+    function delGoal(i){ state.goals.splice(i,1); save(); }
+    function toggle(i, val){ state.goals[i].done = val; save(); }
+
+    // ICS calendar file per goal (native reminders without a backend)
+    function toICS(i){
+      const g = state.goals[i];
+      const dt = g.due && g.time ? new Date(`${g.due}T${g.time}:00`) : (g.due ? new Date(`${g.due}T09:00:00`) : new Date(Date.now()+3600*1000));
+      const uid = `${g.created}.${i}@goalcard.reemhub`;
+      const dtstamp = new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+      const fmt = d => new Date(d).toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+
+      let rrule = '';
+      if(g.freq==='daily') rrule='\\nRRULE:FREQ=DAILY';
+      if(g.freq==='weekly') rrule='\\nRRULE:FREQ=WEEKLY';
+      if(g.freq==='monthly') rrule='\\nRRULE:FREQ=MONTHLY';
+
+      const desc = (g.why? ('Why: '+g.why) : '') + '\\nCreated in Goal Card (ReemHub Edition)';
+      const ics = `BEGIN:VCALENDAR\\nVERSION:2.0\\nPRODID:-//ReemHub Goal Card//EN\\nBEGIN:VEVENT\\nUID:${uid}\\nDTSTAMP:${dtstamp}\\nDTSTART:${fmt(dt)}\\nDURATION:PT30M\\nSUMMARY:${(g.title||'Goal')}\\nDESCRIPTION:${desc}${rrule}\\nEND:VEVENT\\nEND:VCALENDAR`;
+
+      const blob = new Blob([ics], {type:'text/calendar'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `${(g.title||'goal').replace(/\\s+/g,'_')}.ics`;
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    // Basic notifications (test only; scheduled push needs a backend like FCM)
+    async function enableNotifications(){
+      if(!('Notification' in window)) { alert('Notifications not supported on this device/browser.'); return; }
+      let perm = Notification.permission;
+      if(perm !== 'granted') perm = await Notification.requestPermission();
+      if(perm === 'granted'){
+        new Notification('Goal Card notifications enabled', { body: 'You will get test prompts while the app is open.' });
+      } else {
+        alert('Permission denied. You can still use Add-to-Calendar for reminders.');
+      }
+    }
+
+    // Video loader (supports YouTube/Vimeo)
+    function loadVideo(){
+      const val = $('#videoUrl').value.trim();
+      const iframe = $('#player');
+      if(!val){ iframe.src=''; localStorage.removeItem('goalcard_video'); return; }
+      let src = val;
+      const yt = val.match(/(?:youtu.be\\/([\\w-]+)|v=([\\w-]+))/);
+      if(yt){ const id = yt[1]||yt[2]; src = `https://www.youtube.com/embed/${id}`; }
+      iframe.src = src;
+      localStorage.setItem('goalcard_video', src);
+    }
+    function clearVideo(){ $('#player').src=''; localStorage.removeItem('goalcard_video'); }
+
+    // Events
+    $('#addBtn').addEventListener('click', addGoal);
+    $('#notifyBtn').addEventListener('click', enableNotifications);
+    $('#loadVideo').addEventListener('click', loadVideo);
+    $('#clearVideo').addEventListener('click', clearVideo);
+    $('#goalList').addEventListener('click', e => {
+      if(e.target.classList.contains('del')) delGoal(+e.target.dataset.idx);
+      if(e.target.classList.contains('ics')) toICS(+e.target.dataset.idx);
+    });
+    $('#goalList').addEventListener('change', e => {
+      if(e.target.classList.contains('chk')) toggle(+e.target.dataset.idx, e.target.checked);
+    });
+
+    // Init + splash fade
+    render();
+    $('#year').textContent = new Date().getFullYear();
+    const savedVid = localStorage.getItem('goalcard_video');
+    if(savedVid){ $('#player').src = savedVid; $('#videoUrl').
